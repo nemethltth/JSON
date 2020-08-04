@@ -210,7 +210,7 @@ JEncoder_setString(JEncoder* o, const char* val)
       if(val)
       {
          if(BufPrint_jsonString(o->out,val)<0)
-            return JEncoder_setIoErr(o);
+            return JEncoder_setIoErr(o);          
       }
       else
       {
@@ -220,6 +220,23 @@ JEncoder_setString(JEncoder* o, const char* val)
       return 0;
    }
    return -1;
+}
+
+
+int
+JEncoder_setWrite(JEncoder* o, const char* val)
+{
+    if (JEncoder_beginValue(o, FALSE))
+    {
+        if (val)
+        {
+            if (BufPrint_write(o->out, "null", -1) < 0)
+                return JEncoder_setIoErr(o);
+        }
+        
+        return 0;
+    }
+    return -1;
 }
 
 
@@ -543,6 +560,9 @@ JEncoder_vSetJV(JEncoder* o, const char** fmt, va_list* argList)
             break;
          case 's':
             JEncoder_setString(o, va_arg(*argList, char*));
+            break;
+         case 'w':
+             JEncoder_setWrite(o, va_arg(*argList, char*));
             break;
          case 'n':
             JEncoder_setNull(o);
